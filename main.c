@@ -16,8 +16,10 @@ int main(void) {
 
     int cat_pos = HME_POS;   // 고양이 현재 위치
     int prev_pos = -1; // 고양이 이전위치
-    int cp; //cp
-    int mood;//기분
+    
+    
+    int cp = 0; //cp
+    int mood = 3;//기분
 
 
 
@@ -44,7 +46,14 @@ int main(void) {
         printf("==================== 현재상태===================\n");
         printf("현재까지 만든 수프 :  %d개\n", scnt);
         printf("cp: %d 포인트\n", cp);
-        printf("쫀덕이의 기분(0~3): %d",mood)
+        printf("쫀덕이의 기분(0~3): %d\n", mood);
+        switch (mood) {
+        case 0:printf("     기분이 매우 나쁩니다.\n");
+        case 1:printf("     심심해합니다.\n");
+        case 2:printf("     식빵을 굽습니다.\n");
+        case 3:printf("     골골송을 부릅니다.\n");
+        }
+
         printf("집사와의 관계(0~4) :  %d\n", intimacy);
         switch (intimacy) {
         case 0: printf("    곁에 오는 것조차 싫어합니다.\n"); break;
@@ -54,6 +63,23 @@ int main(void) {
         case 4: printf("    집사 껌딱지입니다.\n"); break;
         }
         printf("=================================================\n\n");
+        //2-2
+        int dicelimit = 6 - intimacy;
+        printf("6-%d: 주사위 눈이 %d이하이면 그냥 기분이 니빠집니다.\n", intimacy, dicelimit);
+        printf("주사위를굴립니다. 또르르...\n");
+        int mooddice = rand() % 6 + 1;
+        printf("%d가 나왔습니다.\n");
+        if (mooddice <= dicelimit) {
+            if (mood > 0) {
+                printf("쫀덕의 기분이 나빠집니다. : %d -> %d\n", mood, mood-1);
+                mood--;
+            }
+            else {
+                printf("쫀덕의 기분이 나빠집니다. : %d -> %d\n", mood, mood);
+            }
+               
+        }
+
 
         // 1-5 이동
         dice = rand() % 6 + 1;
