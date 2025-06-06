@@ -16,6 +16,8 @@ int main(void) {
 
     int cat_pos = HME_POS;   // 고양이 현재 위치
     int prev_pos = -1; // 고양이 이전위치
+    int cp; //cp
+    int mood;//기분
 
 
 
@@ -36,12 +38,13 @@ int main(void) {
     printf("쫀떡이는 식빵을 굽고 있습니다.\n");
     Sleep(1000);
     system("cls");
-
     //1-2상태출력
     while (1) {
         Sleep(500);
         printf("==================== 현재상태===================\n");
         printf("현재까지 만든 수프 :  %d개\n", scnt);
+        printf("cp: %d 포인트\n", cp);
+        printf("쫀덕이의 기분(0~3): %d",mood)
         printf("집사와의 관계(0~4) :  %d\n", intimacy);
         switch (intimacy) {
         case 0: printf("    곁에 오는 것조차 싫어합니다.\n"); break;
