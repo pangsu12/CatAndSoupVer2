@@ -6,6 +6,9 @@
 #define ROOM_WIDTH  10
 #define HME_POS 1
 #define BWL_POS  (ROOM_WIDTH -2)
+#define SCR_POS 3
+#define CAT_POS 6
+
 
 
 int main(void) {
@@ -16,8 +19,9 @@ int main(void) {
 
     int cat_pos = HME_POS;   // 고양이 현재 위치
     int prev_pos = -1; // 고양이 이전위치
-    
-    
+    int has_scratcher = 1; // 놀이기구 여부
+    int has_cattower = 1; //캣타워 여부
+
     int cp = 0; //cp
     int mood = 3;//기분
 
@@ -90,27 +94,54 @@ int main(void) {
 
 
         Sleep(500);
-        //냄비 이동
-        if (dice >= move_threshold) {
-            if (cat_pos < BWL_POS) {
-                prev_pos = cat_pos;
-                cat_pos++;
-                printf("냄비쪽으로 움직입니다.\n");
+        ////냄비 이동
+        //if (dice >= move_threshold) {
+        //    if (cat_pos < BWL_POS) {
+        //        prev_pos = cat_pos;
+        //        cat_pos++;
+        //        printf("냄비쪽으로 움직입니다.\n");
+        //    }
+        //    else {
+        //        printf("벽에 막혀 이동하지 못했습니다.\n");
+        //    }
+        //}
+        ////집 이동
+        //else {
+        //    if (cat_pos > HME_POS) {
+        //        cat_pos--;
+        //        printf("집쪽으로 움직입니다.\n");
+        //    }
+        //    else {
+        //        printf("벽에 막혀 이동하지 못했습니다.\n");
+        //    }
+        //}
+        /*2-3*/
+        prev_pos = cat_pos;
+
+        if (mood == 0) {
+            printf("기분이 매우 나쁜 쫀떡이는 집으로 향합니다.\n");
+            if (cat_pos > HME_POS) cat_pos--;
+        }
+        else if (mood == 1) {
+            if (has_scratcher) {
+                printf("쫀떡이는 심심해서 스크래처 쪽으로 이동합니다.\n");
+                if (cat_pos < SCR_POS) cat_pos++;
+                else if (cat_pos > SCR_POS) cat_pos--;
             }
             else {
-                printf("벽에 막혀 이동하지 못했습니다.\n");
+                printf("놀거리가 없어서 기분이 매우 나빠집니다.\n");
+                if (mood > 0) mood--;
             }
         }
-        //집 이동
-        else {
-            if (cat_pos > HME_POS) {
-                cat_pos--;
-                printf("집쪽으로 움직입니다.\n");
-            }
-            else {
-                printf("벽에 막혀 이동하지 못했습니다.\n");
-            }
+        else if (mood == 2) {
+            printf("쫀떡이는 기분 좋게 식빵을 굽고 있습니다.\n");
+            // 이동 없음
         }
+        else if (mood == 3) {
+            printf("쫀떡이는 골골송을 부르며 수프를 만들러 갑니다.\n");
+            if (cat_pos < BWL_POS) cat_pos++;
+        }
+
         Sleep(500);
         //1-6 행동
         if (cat_pos == BWL_POS) {
@@ -140,6 +171,37 @@ int main(void) {
         printf("##########\n");
 
         Sleep(500);
+        // 행동 처리 (쫀떡이 위치 기반 효과)
+        if (cat_pos == BWL_POS) {
+            printf("쫀떡이가 감자 수프를 만들었습니다.\n");
+            scnt++;
+            printf("현재까지 만든 수프 : %d개\n", scnt);
+        }
+        else if (cat_pos == HME_POS) {
+            if (prev_pos == HME_POS) {  // 집에 계속 있는 상태
+                if (mood < 3) {
+                    printf("쫀떡이는 집에서 편안하게 쉬고 있습니다.\n");
+                    printf("기분이 조금 좋아졌습니다: %d -> %d\n", mood, mood + 1);
+                    mood++;
+                }
+
+            }
+        }
+        else if (cat_pos == SCR_POS && has_scratcher) {
+            if (mood < 3) {
+                printf("쫀떡이는 스크래처를 긁고 놀았습니다.\n");
+                printf("기분이 조금 좋아졌습니다: %d -> %d\n", mood, mood + 1);
+                mood++;
+            }
+            
+        }
+        else if (cat_pos == CAT_POS && has_cattower) {
+            int prev_mood = mood;
+            mood += 2;
+            if (mood > 3) mood = 3;
+            printf("쫀떡이는 캣타워를 뛰어다닙니다.\n");
+            printf("기분이 제법 좋아졌습니다: %d -> %d\n", prev_mood, mood);
+        }
 
         // 1-3 상호작용
         int num;
