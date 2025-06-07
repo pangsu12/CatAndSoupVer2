@@ -9,7 +9,8 @@
 #define SCR_POS 3
 #define CAT_POS 6
 
-
+int has_toy_mouse = 0;
+int has_laser_pointer = 0;
 
 int main(void) {
     //초기값
@@ -21,6 +22,7 @@ int main(void) {
     int prev_pos = -1; // 고양이 이전위치
     int has_scratcher = 1; // 놀이기구 여부
     int has_cattower = 1; //캣타워 여부
+ \
 
     int cp = 0; //cp
     int mood = 3;//기분
@@ -203,53 +205,78 @@ int main(void) {
             printf("기분이 제법 좋아졌습니다: %d -> %d\n", prev_mood, mood);
         }
 
-        // 1-3 상호작용
+        // 1-3 상호작용, 2-5~2-6
         int num;
         while (1) {
-            Sleep(500);
-            printf("어떤 상호작용을 하시겠습니까?     0. 아무것도 하지 않음  1. 긁어 주기\n");
-            if (scanf_s("%d", &num) == 1 && (num == 0 || num == 1)) break;
-            //0과 1을 입력 받기, 0과 1이 아닌 수가 입력되면 다시 입력받기
-            //숫자 하나를 입력받았음 (참) and   num이 0이거나 1이면 true  그외 break 후 아래 출력
-            printf("잘못된 입력입니다. 숫자 0 또는 1을 입력하세요.\n");
-            while (getchar() != '\n'); // 입력 버퍼 비우기 
+            printf("\n어떤 상호작용을 하시겠습니까?\n");
+            printf("0. 아무것도 하지 않음\n");
+            printf("1. 긁어 주기\n");
+
+            int option_num = 2;
+            if (has_toy_mouse) {
+                printf("%d. 장난감 쥐로 놀아 주기\n", option_num);
+                option_num++;
+            }
+            if (has_laser_pointer) {
+                printf("%d. 레이저 포인터로 놀아 주기\n", option_num);
+            }
+
+            printf(">> ");
+            if (scanf_s("%d", &num) == 1) {
+                int max_option = 1 + has_toy_mouse + has_laser_pointer;
+                if (num >= 0 && num <= max_option) break;
+            }
+            printf("잘못된 입력입니다. 다시 입력하세요.\n");
+            while (getchar() != '\n');
         }
-        //0을 눌렀을 떄 상호작용
-        if (num == 0) {
-            dice = rand() % 6 + 1;
+
+        // 상호작용 처리
+        int dice = rand() % 6 + 1;
+        switch (num) {
+        case 0:
             printf("아무것도 하지 않습니다.\n");
-            printf("4/6 확률로 친밀도가 떨어집니다.\n 주사위를 굴립니다.  또르륵 . . . \n %d이 나왔습니다!\n", dice);
-            if (dice <= 4) {
-                if (intimacy > 0) {
-                    intimacy--;
-                    printf("친밀도가 떨어졌습니다.\n현재 친밀도: %d\n", intimacy);
-                }
-                else {
-                    printf("이미 최저 친밀도입니다.\n현재 친밀도: %d\n", intimacy);
-                }
+            if (mood > 0) {
+                mood--;
+                printf("기분이 나빠졌습니다: %d -> %d\n", mood + 1, mood);
             }
-            else {
-                printf("다행히 친밀도가 떨어지지 않았습니다.\n현재 친밀도: %d\n", intimacy);
+            if (dice <= 5 && intimacy > 0) {
+                intimacy--;
+                printf("친밀도가 떨어졌습니다: %d -> %d\n", intimacy + 1, intimacy);
             }
-        }
-        //1을 눌렀을 때 상호작용 
-        else {
-            dice = rand() % 6 + 1;
-            printf("쫀떡이의 턱을 긁어주었습니다.\n");
-            printf("2/6 확률로 친밀도가 올라갑니다. \n주사위를 굴립니다.  또르륵 . . . \n %d이 나왔습니다!\n", dice);
-            if (dice >= 5) {
-                if (intimacy < 4) {
+            break;
+
+        case 1:
+            printf("턱을 긁어주었습니다.\n");
+            if (dice >= 5 && intimacy < 4) {
+                intimacy++;
+                printf("친밀도가 올랐습니다: %d -> %d\n", intimacy - 1, intimacy);
+            }
+            break;
+
+        case 2:
+            if (has_toy_mouse && (!has_laser_pointer || num == 2)) {
+                printf("장난감 쥐로 놀아주었습니다.\n");
+                if (mood < 3) {
+                    mood++;
+                    printf("기분이 좋아졌습니다: %d -> %d\n", mood - 1, mood);
+                }
+                if (dice >= 4 && intimacy < 4) {
                     intimacy++;
-                    printf("친밀도가 높아집니다. \n현재 친밀도: %d\n", intimacy);
-                }
-                else {
-                    printf("이미 최고 친밀도입니다.\n현재 친밀도: %d\n", intimacy);
+                    printf("친밀도가 올랐습니다: %d -> %d\n", intimacy - 1, intimacy);
                 }
             }
             else {
-                printf("친밀도는 그대로입니다.\n현재 친밀도: %d\n", intimacy);
+                printf("레이저 포인터로 놀아주었습니다!\n");
+                mood = (mood + 2 > 3) ? 3 : mood + 2;
+                printf("기분이 매우 좋아졌습니다: %d -> %d\n", mood - 2, mood);
+                if (dice >= 2 && intimacy < 4) {
+                    intimacy++;
+                    printf("친밀도가 올랐습니다: %d -> %d\n", intimacy - 1, intimacy);
+                }
             }
+            break;
         }
+
 
         Sleep(2500);
         system("cls");
