@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define ROOM_WIDTH  10
 #define HME_POS 1
 #define BWL_POS  (ROOM_WIDTH -2)
@@ -24,7 +25,7 @@ int main(void) {
     int mood = 3;//기분
     int SCR_POS = 3;
     int CAT_POS = 6;
-
+    int turn_count = 0;
     //1 -1 고양이 그림
     printf("****야옹이와 스프****\n \n");
     printf("       /\\_/\\  \n");
@@ -45,10 +46,10 @@ int main(void) {
         printf("cp: %d 포인트\n", cp);
         printf("쫀덕이의 기분(0~3): %d\n", mood);
         switch (mood) {
-        case 0:printf("     기분이 매우 나쁩니다.\n");
-        case 1:printf("     심심해합니다.\n");
-        case 2:printf("     식빵을 굽습니다.\n");
-        case 3:printf("     골골송을 부릅니다.\n");
+        case 0:printf("     기분이 매우 나쁩니다.\n"); break;
+        case 1:printf("     심심해합니다.\n"); break;
+        case 2:printf("     식빵을 굽습니다.\n"); break;
+        case 3:printf("     골골송을 부릅니다.\n"); break;
         }
 
         printf("집사와의 관계(0~4) :  %d\n", intimacy);
@@ -65,7 +66,7 @@ int main(void) {
         printf("6-%d: 주사위 눈이 %d이하이면 그냥 기분이 니빠집니다.\n", intimacy, dicelimit);
         printf("주사위를굴립니다. 또르르...\n");
         int mooddice = rand() % 6 + 1;
-        printf("%d가 나왔습니다.\n");
+        printf("%d가 나왔습니다.\n",mooddice);
         if (mooddice <= dicelimit) {
             if (mood > 0) {
                 printf("쫀덕의 기분이 나빠집니다. : %d -> %d\n", mood, mood-1);
@@ -119,7 +120,8 @@ int main(void) {
 
         // 1-4 방그리기 ,1-5
         Sleep(500);
-        printf("###############\n");
+        for (int i = 0; i < ROOM_WIDTH; i++) printf("#");
+        printf("\n");
 
         // 첫 번째 줄: H, B, 가구(S/T)
         printf("#H");
@@ -138,7 +140,7 @@ int main(void) {
             else printf(" ");
         }
         printf("#\n");
-        printf("###############\n");
+        for (int i = 0; i < ROOM_WIDTH; i++) printf("#");
 
         Sleep(500);
         // 행동 처리 (쫀떡이 위치 기반 효과)
@@ -334,8 +336,38 @@ int main(void) {
             }
         }
 
+        if (turn_count == 3) {
+            int correct_cup = rand() % 3 + 1;
+            int guess;
+
+            printf("\t 돌발 퀘스트 발생! \n");
+            printf("쫀떡이가 좋아하는 간식을 컵 세 개 중 하나에 숨겼습니다!\n");
+            printf("1, 2, 3 중 어느 컵에 간식이 있을까요?\n");
+
+            while (1) {
+                printf("당신의 선택 (1~3): ");
+                if (scanf_s("%d", &guess) == 1 && guess >= 1 && guess <= 3) break;
+                printf("잘못된 입력했어요. 숫자 1, 2, 3 중 하나를 입력하세요.\n");
+                while (getchar() != '\n'); //버퍼비우기
+            }
+
+            if (guess == correct_cup) {
+                printf("정답입니다! 쫀떡이와의 친밀도가 상승합니다!\n");
+                if (intimacy < 4) intimacy++;
+            }
+            else {
+                printf("틀렸습니다ㅠㅠ... 쫀떡이와의 친밀도가 감소합니다.\n");
+                if (intimacy > 0) intimacy--;
+            }
+
+            printf("현재 친밀도: %d\n", intimacy);
+            Sleep(3000);
+        }
+
 
         Sleep(2500);
+        turn_count++; 
+
         system("cls");
     }
 
